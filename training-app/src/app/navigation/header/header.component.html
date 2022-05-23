@@ -6,9 +6,9 @@
     </div>
     <div>LOGO</div>
     <div fxFlex fxLayout fxLayoutAlign="flex-end" class="w-100" fxHide.xs>
-      <a routerLink="/signup">Sign up</a>
-      <a routerLink="/login">Login</a>
-      <a routerLink="/training">Training</a>
-      <a>Logout</a>
+      <a *ngIf="!isAuth" routerLink="/signup">Sign up</a>
+      <a *ngIf="!isAuth" routerLink="/login">Login</a>
+      <a *ngIf="isAuth" routerLink="/training">Training</a>
+      <a *ngIf="isAuth" (click)="onLogout()">Logout</a>
     </div>
   </mat-toolbar>
