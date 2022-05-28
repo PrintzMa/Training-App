@@ -17,6 +17,9 @@ import { AuthModule } from './auth/auth.module';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { MaterialModule } from './material.module';
 
+import { StoreModule } from '@ngrx/store';
+import { reducers } from './app.reducer';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -32,7 +35,8 @@ import { MaterialModule } from './material.module';
     BrowserAnimationsModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
-    MaterialModule
+    MaterialModule,
+    StoreModule.forRoot(reducers),
   ],
   providers: [AuthService, TrainingService, UIService],
   bootstrap: [AppComponent],

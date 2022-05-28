@@ -4,14 +4,14 @@
     <mat-card-content fxLayoutAlign="center">
         <mat-form-field>
             <mat-select [(ngModel)]="selectedExercise" placeholder="Type of training">
-                <mat-option *ngFor="let exercise of exercises" [value]="exercise.id">
+                <mat-option *ngFor="let exercise of (exercises$ | async )" [value]="exercise.id">
                     {{ exercise.name }}
                 </mat-option>
             </mat-select>
         </mat-form-field>
     </mat-card-content>
     <mat-card-actions fxLayoutAlign="center">
-      <button *ngIf="!exercises" color="warn" mat-button (click)="fetchExercises()">Fetch Again</button>
+      <button *ngIf="!(exercises$ | async)" color="warn" mat-button (click)="fetchExercises()">Fetch Again</button>
       <button (click)="onStartTraining()" mat-raised-button color="accent" type="submit" mat-button>Start</button>
     </mat-card-actions>
   </mat-card>
