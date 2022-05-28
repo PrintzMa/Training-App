@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Subject, map, Subscription } from 'rxjs';
+import { UIService } from '../shared/ui.service';
 import { Exercise } from './exercise.model';
 
 @Injectable()
@@ -15,46 +16,49 @@ export class TrainingService {
   private runningExercise: Exercise;
   private exercises: Exercise[] = [];
 
-  constructor(private fireStore: AngularFirestore) {}
+  constructor(private fireStore: AngularFirestore, private uiService: UIService) {}
 
   fetchAvailableExercises() {
-    this.fbSubs.push(this.fireStore
-      .collection('availableExercises')
-      .snapshotChanges()
-      .pipe(
-        map((docArray) => {
-          return docArray.map((doc) => {
-            const data = doc.payload.doc.data() as Exercise;
-            return {
-              id: doc.payload.doc.id,
-              name: data.name,
-              duration: data.duration,
-              calories: data.calories,
-            };
-          });
-        })
-      )
-      .subscribe(
-        (exercises: Exercise[]) => {
+    this.fbSubs.push(
+      this.fireStore
+        .collection('availableExercises')
+        .snapshotChanges()
+        .pipe(
+          map((docArray) => {
+            return docArray.map((doc) => {
+              const data = doc.payload.doc.data() as Exercise;
+              return {
+                id: doc.payload.doc.id,
+                name: data.name,
+                duration: data.duration,
+                calories: data.calories,
+              };
+            });
+          })
+        )
+        .subscribe((exercises: Exercise[]) => {
           this.availableExercises = exercises;
           this.exercisesChanged.next([...this.availableExercises]);
-        }
-      ));
+        }, error => {
+          this.uiService.showSnackBar('Fetching Exercises failed, please try again later', null, 4000);
+          this.exerciseChanged.next(null);
+        })
+    );
   }
 
   fetchFinishedExercises() {
-    this.fbSubs.push(this.fireStore
-      .collection('finishedExercises')
-      .valueChanges()
-      .subscribe(
-        (exercises) => {
+    this.fbSubs.push(
+      this.fireStore
+        .collection('finishedExercises')
+        .valueChanges()
+        .subscribe((exercises) => {
           this.finishedExercisesChanged.next(exercises as Exercise[]);
-        }
-      ));
+        })
+    );
   }
 
   cancelSubs() {
-    this.fbSubs.forEach(sub => sub.unsubscribe);
+    this.fbSubs.forEach((sub) => sub.unsubscribe);
   }
 
   startExercise(selectedId: string) {
